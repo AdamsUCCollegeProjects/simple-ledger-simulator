@@ -7,11 +7,13 @@ import java.time.format.DateTimeFormatter;
  * The stored hash is set at creation and is NOT updated when data is later changed,
  * so tampering can be demonstrated clearly.
  */
-public class Block {
+public final class Block {
 
     private static final String DISPLAY_SEPARATOR = "========================================";
+    private static final String HASH_INPUT_SEPARATOR = "#";
     private static final DateTimeFormatter TIMESTAMP_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+                    .withZone(ZoneId.systemDefault());
 
     private final int index;
     private final long timestamp;
@@ -28,8 +30,14 @@ public class Block {
     }
 
     public String calculateHash() {
-        String content = index + Long.toString(timestamp) + data + previousHash;
-        return HashUtil.sha256(content);
+        return HashUtil.sha256(getHashInput());
+    }
+
+    public String getHashInput() {
+        return index
+                + HASH_INPUT_SEPARATOR + timestamp
+                + HASH_INPUT_SEPARATOR + data
+                + HASH_INPUT_SEPARATOR + previousHash;
     }
 
     public int getIndex() {
@@ -76,7 +84,8 @@ public class Block {
                 + "Timestamp    : " + formattedTimestamp + "\n"
                 + "Data         : " + data + "\n"
                 + "Previous Hash: " + previousHash + "\n"
-                + "Hash         : " + hash + "\n"
+                + "Hashing input : \"" + getHashInput() + "\"\n"
+                + "Computed hash : " + hash + "\n"
                 + DISPLAY_SEPARATOR;
     }
 }

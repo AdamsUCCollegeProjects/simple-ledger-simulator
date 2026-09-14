@@ -25,6 +25,7 @@ public class BlockchainTest {
         testModifiedDataIsInvalid();
         testModifiedPreviousHashIsInvalid();
         testChainHasAtLeastFiveHashedBlocks();
+        testExposedHashInputProducesStoredHash();
 
         if (failureCount == 0) {
             System.out.println("All tests PASSED.");
@@ -72,6 +73,16 @@ public class BlockchainTest {
         assertTrue(
                 "Test 4 — Chain has at least five SHA-256 blocks",
                 transactionBlockCount >= MINIMUM_TRANSACTION_BLOCKS
+        );
+    }
+
+    private static void testExposedHashInputProducesStoredHash() {
+        Blockchain ledger = buildSampleChain();
+        Block block = ledger.getBlock(TAMPER_BLOCK_INDEX);
+        String hashFromExposedInput = HashUtil.sha256(block.getHashInput());
+        assertTrue(
+                "Test 5 — Exposed input produces the stored hash",
+                block.getHash().equals(hashFromExposedInput)
         );
     }
 

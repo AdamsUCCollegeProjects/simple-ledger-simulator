@@ -122,24 +122,40 @@ javac -d out src/*.java
 java -cp out Main
 ```
 
+At the transaction prompt, enter your own transactions and type `done` when finished.
+Press Enter on the first prompt to use the five sample transactions instead. The program
+then asks which block to tamper with and what replacement data to use.
+
+The demo uses ANSI colors for validation results. Set `USE_COLOR` to `false` near the top
+of `Main.java` if your terminal does not support ANSI colors.
+
 **Step 3 (optional): Run the tests** (these automatically check that the code behaves correctly)
 
 ```bash
 java -cp out BlockchainTest
 ```
 
-## What You'll See When You Run It
+## Example Output
 
 When you run `Main`, the program will:
 
 1. Create a blockchain, starting with the genesis block
-2. Add 5 example transactions (like fake payments)
-3. Print out every block's details: its position (index), the time it was created, its data, the hash of the block before it, and its own hash
-4. Check the chain and confirm it is **VALID** (nothing has been tampered with)
-5. Secretly change the data in Block #2 (changing "$50" to "$5000") — but WITHOUT updating its hash, just like a real attacker might try to do
-6. Check the chain again — this time it will say **INVALID**, and explain why:
-   - Block #2's hash doesn't match its data anymore
-   - Block #3 is still pointing to Block #2's old (original) hash
+2. Ask for live transactions, with an Enter-to-use-samples fallback
+3. Print every block's exact hashing input and the SHA-256 hash computed from it
+4. Compare every stored hash with a fresh recalculation and show a colored **MATCH**
+5. Ask you to choose a block and enter replacement data
+6. Check the chain again and show colored **MISMATCH** and **INVALID** results
+
+```text
+Enter transaction (or 'done' to stop, Enter for samples):
+Using five sample transactions.
+...
+Hashing input : "2#1726331760123#Bob -> Charlie: $50#466d8c27..."
+Computed hash : 1945ec0d...
+...
+Block #2: stored=1945ec0d...  recalculated=7f3ac0e1...  -> MISMATCH
+Blockchain is INVALID.
+```
 
 ## Understanding the Tampering Demo
 

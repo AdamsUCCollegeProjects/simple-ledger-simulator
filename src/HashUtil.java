@@ -1,7 +1,6 @@
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.Objects;
 
 /**
@@ -11,6 +10,7 @@ import java.util.Objects;
 public final class HashUtil {
 
     private static final String HASH_ALGORITHM = "SHA-256";
+    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
 
     private HashUtil() {
     }
@@ -20,9 +20,19 @@ public final class HashUtil {
         try {
             MessageDigest digest = MessageDigest.getInstance(HASH_ALGORITHM);
             byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hashBytes);
+            return toHex(hashBytes);
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException(HASH_ALGORITHM + " is not available", exception);
         }
+    }
+
+    private static String toHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int index = 0; index < bytes.length; index++) {
+            int value = bytes[index] & 0xFF;
+            hexChars[index * 2] = HEX_DIGITS[value >>> 4];
+            hexChars[index * 2 + 1] = HEX_DIGITS[value & 0x0F];
+        }
+        return new String(hexChars);
     }
 }
